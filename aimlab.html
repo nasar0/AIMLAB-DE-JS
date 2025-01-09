@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .circulo {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: violet;
+
+
+        }
+
+
+        .puntaje,
+        .fallo,
+        .tiempo {
+            width: 50%;
+            border: solid 5px;
+            padding: 10px;
+            text-align: center;
+        }
+
+
+        .game {
+            display: flex;
+            justify-content: center;
+
+        }
+
+
+        .tablero {
+            position: relative;
+            height: 80vh;
+            width: 80%;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="game">
+        <div class="puntaje">
+            Puntaje : 0
+        </div>
+        <div class="tiempo">
+
+        </div>
+        <div class="fallo">
+            fallo : 0
+        </div>
+    </div>
+    <div class="game botton">
+        <button>Start</button>
+    </div>
+    <div class="tablero">
+        <div class="circulo"></div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        let puntaje = 0;
+        let fallos = 0;
+        let intervalo = 0;
+        let fin = true;
+        $(function () {
+            $(".tiempo").text(`Tiempo restante: 10`);
+            if (fin) {
+                $(".botton").on("click", function () {
+                    puntaje = 0;
+                    fallos = 0;
+                    time();
+                    mover();
+                    $(".tablero").on("click", function () {
+                        fallo()
+                        mover()
+                    });
+
+                    $(".circulo").on("click", function () {
+                        circulo();
+                        puntuacion();
+                    })
+                })
+            }
+
+        })
+        function stopgame() {
+            var x = 0
+            var y = 0
+            $(".circulo").css({
+                left: x + "%",
+                top: y + "%"
+            })
+            fin = true
+            return fin;
+        }
+        function fallo() {
+            fallos++;
+            $(".fallo").text("fallos : " + fallos)
+        }
+        function circulo() {
+
+            var x = Math.random() * 100 + 1;
+            var y = Math.random() * 100 + 1;
+            $(this).css({
+                left: x + "%",
+                top: y + "%"
+            })
+
+
+        }
+        function mover() {
+            var x = Math.random() * 100 + 1;
+            var y = Math.random() * 100 + 1;
+            $(".circulo").css({
+                left: x + "%",
+                top: y + "%"
+
+            })
+        }
+        function puntuacion() {
+            puntaje++;
+            fallos--;
+            $(".puntaje").text("Puntaje : " + puntaje)
+        }
+        function time() {
+            let tiempoRestante = 2;
+            let intervalo = setInterval(function () {
+                $(".tiempo").text(`Tiempo restante: ${tiempoRestante}`);
+                tiempoRestante--;
+                if (tiempoRestante < 0) {
+                    clearInterval(intervalo);
+                    stopgame();
+                }
+            }, 1000);
+
+
+        }
+
+
+
+
+    </script>
+</body>
+
+
+</html>
