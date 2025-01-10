@@ -6,14 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body {
+            background: linear-gradient(to bottom, #d45d5d, #e76f51, #e04f20, #9b2d20);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
         .circulo {
             position: absolute;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             background-color: violet;
-
-
         }
 
 
@@ -30,14 +37,44 @@
         .game {
             display: flex;
             justify-content: center;
-
         }
 
 
-        .tablero {
+        .tablero,
+        .tablero1 {
             position: relative;
             height: 80vh;
             width: 80%;
+            border: 2px solid;
+            border-radius: 30px;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            margin: auto;
+
+            select {
+                border-radius: 35px;
+                text-transform: uppercase;
+            }
+
+            label {
+                text-transform: uppercase;
+            }
+
+            input {
+                text-transform: uppercase;
+                border-radius: 35px;
+                background-color: rgb(255, 0, 0);
+                color: white;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
@@ -45,106 +82,184 @@
 
 <body>
     <div class="game">
-        <div class="puntaje">
-            Puntaje : 0
-        </div>
-        <div class="tiempo">
+        <form action="" method="post">
+            <label for="">Seleciona el formato del reto</label>
+            <select name="select" id="">
+                <option value="1">Flicking</option>
+                <option value="2">Clicking</option>
+            </select><br>
+            <input type="submit">
+        </form>
+    </div>
+    <div class="juego">
+        <div>
+            <div class="game">
+                <div class="puntaje">
+                    Puntaje : 0
+                </div>
+                <div class="tiempo">
 
+                </div>
+                <div class="fallo">
+                    fallo : 0
+                </div>
+            </div>
         </div>
-        <div class="fallo">
-            fallo : 0
+        <div class="game botton">
+            <button>Start</button>
+        </div>
+        <div class="tablero">
+            <div class="circulo" id="circulo"></div>
         </div>
     </div>
-    <div class="game botton">
-        <button>Start</button>
-    </div>
-    <div class="tablero">
-        <div class="circulo"></div>
-    </div>
+
+    <script>
+
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script>
         let puntaje = 0;
         let fallos = 0;
         let intervalo = 0;
         let fin = true;
+        let form = $("form");
+        let select = $("select");
+
         $(function () {
+            $(".juego").hide()
+            $(".juego2").hide()
             $(".tiempo").text(`Tiempo restante: 10`);
-            if (fin) {
-                $(".botton").on("click", function () {
+
+            form.on("submit", function (e) {
+                e.preventDefault()
+                let valor = select.val();
+                console.log(valor);
+
+                if (valor == "1") {
+                    $(".juego").show()
+                    form.hide()
+                    $(".botton").on("click", function () {
+
+                        if (fin) {
+                            fin = false;
+                            puntaje = 0;
+                            fallos = 0;
+                            $(".puntaje").text("Puntaje : " + puntaje);
+                            $(".fallo").text("Fallos : " + fallos);
+                            time();
+                            mover();
+                            $(".tablero").off("click").on("click", function () {
+                                fallo();
+                            });
+                            $(".circulo").off("click").on("click", function () {
+                                circulo();
+                                puntuacion();
+                            });
+
+                        }
+                    });
+                }
+
+                if (valor == "2") {
                     puntaje = 0;
                     fallos = 0;
+                    $(".botton").hide()
+                    $(".juego").show()
+                    form.hide()
                     time();
-                    mover();
-                    $(".tablero").on("click", function () {
-                        fallo()
-                        mover()
-                    });
+                    $("#circulo").hide()
+                    for (let i = 0; i < 10; i++) {
+                        let div = $("<div></div>");
+                        div.addClass("circulo");
+                        $(".tablero").append(div);
 
-                    $(".circulo").on("click", function () {
-                        circulo();
-                        puntuacion();
-                    })
-                })
-            }
+                        div.on("click", function () {
+                            puntuacion();
+                            div.hide();
+                            if (puntaje == 10) {
+                                stopgame(2);
+                            }
+                        });
+                        $(".tablero").off("click").on("click", function () {
+                            fallo();
+                        });
+                        var x = Math.random() * 80;
+                        var y = Math.random() * 80;
+                        div.css({
+                            left: x + "%",
+                            top: y + "%"
+                        });
+                    }
+                    
 
-        })
-        function stopgame() {
-            var x = 0
-            var y = 0
-            $(".circulo").css({
-                left: x + "%",
-                top: y + "%"
+                }
             })
-            fin = true
-            return fin;
+
+
+        });
+        function reset() {
+
+            $(".juego").hide()
+            form.show()
         }
+        function stopgame(num) {
+            if (num == 1) {
+                $(".circulo").css({
+                    left: "50%",
+                    top: "50%"
+                });
+                alert("¡Juego terminado! Puntaje final: " + puntaje);
+                reset()
+            }
+            if (num == 2) {
+                $(".circulo").css({
+                    left: "50%",
+                    top: "50%"
+                });
+                alert("¡Juego terminado! Tiempo final: " + tiempoRestante);
+                reset()
+            }
+        }
+
         function fallo() {
             fallos++;
-            $(".fallo").text("fallos : " + fallos)
+            $(".fallo").text("Fallos : " + fallos);
         }
+
         function circulo() {
-
-            var x = Math.random() * 100 + 1;
-            var y = Math.random() * 100 + 1;
-            $(this).css({
-                left: x + "%",
-                top: y + "%"
-            })
-
-
+            mover();
         }
+
         function mover() {
-            var x = Math.random() * 100 + 1;
-            var y = Math.random() * 100 + 1;
+            var x = Math.random() * 80 + 10;
+            var y = Math.random() * 80 + 10;
             $(".circulo").css({
                 left: x + "%",
                 top: y + "%"
+            });
+        }
 
-            })
-        }
         function puntuacion() {
-            puntaje++;
             fallos--;
-            $(".puntaje").text("Puntaje : " + puntaje)
+            puntaje++;
+            $(".puntaje").text("Puntaje : " + puntaje);
         }
+
         function time() {
-            let tiempoRestante = 2;
-            let intervalo = setInterval(function () {
+
+            tiempoRestante = 10;
+            intervalo = setInterval(function () {
                 $(".tiempo").text(`Tiempo restante: ${tiempoRestante}`);
                 tiempoRestante--;
                 if (tiempoRestante < 0) {
                     clearInterval(intervalo);
-                    stopgame();
+                    stopgame(1);
                 }
             }, 1000);
-
-
         }
-
-
-
-
+        
     </script>
+
 </body>
 
 
